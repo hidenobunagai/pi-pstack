@@ -1,6 +1,6 @@
 # pi-pstack
 
-A port of [pstack](https://github.com/cursor/plugins/tree/main/pstack) to [Pi](https://pi.dev) (`@earendil-works/pi-coding-agent`), tuned for this host. Version `0.15.30-pi.1`: ported against upstream 0.15.30 by way of the DSH port (`dsh-pstack`), with `statechart` and the formal verification skills from upstream v0.15.36.
+A port of [pstack](https://github.com/cursor/plugins/tree/main/pstack) to [Pi](https://pi.dev) (`@earendil-works/pi-coding-agent`), tuned for this host. Version `0.15.30-pi.2`: ported against upstream 0.15.30 by way of the DSH port (`dsh-pstack`), with `statechart` and the formal verification skills from upstream v0.15.36.
 
 This is an unofficial personal fork. It is not affiliated with or endorsed by the author or Cursor. Provided as-is, with no support. Issues and pull requests may go unanswered. Fork it and make it yours.
 
@@ -71,7 +71,7 @@ The other 25 task skills (poteto-mode, the routines such as how, why, recall, te
 
 Two layers pick models on this host, and they do not overlap.
 
-- **The parent.** The session runs the virtual model `router/auto`, served by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to DeepSeek V4.1 Flash and never changes. Jev judges each user turn's effort, and the judgment is lifted before it applies (a low judgment runs at high, and medium or above runs at max). This repo does not touch it, and the skills tell the agent not to restate the parent's model or effort.
+- **The parent.** The session runs the virtual model `router/auto`, served by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to Xiaomi MiMo V2.6 Pro and never changes. Jev judges each user turn's effort, and the judgment is lifted before it applies (a low judgment runs at medium, medium runs at high, and anything above clamps to high, the model's ceiling). This repo does not touch it, and the skills tell the agent not to restate the parent's model or effort.
 - **The children.** This repo's `config/models.yml` names a route per pstack role, and each `subagent` call passes it as `model: "<provider>/<model>:<effort>"`. A per-call model is the strongest layer in pi-subagents, so it wins over `subagents.agentOverrides`, agent frontmatter, `subagents.defaultModel`, and the parent's model. Nothing needs enabling.
 
 The shipped defaults, all on the `commandcode` provider from `~/.pi/agent/models.json`:
