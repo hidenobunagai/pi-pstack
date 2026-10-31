@@ -71,7 +71,7 @@ The other 25 task skills (poteto-mode, the routines such as how, why, recall, te
 
 Two layers pick models on this host, and they do not overlap.
 
-- **The parent.** The session runs the virtual model `router/auto`, served by the Jev router extension in `~/.pi/agent/extensions/router`. Jev judges each user turn, sets the parent's thinking level, and picks the parent's model (peak-hour and hard-task routing). This repo does not touch it, and the skills tell the agent not to restate the parent's model or effort.
+- **The parent.** The session runs the virtual model `router/auto`, served by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to DeepSeek V4.1 Flash and never changes. Jev judges each user turn's effort, and the judgment is lifted before it applies (a low judgment runs at high, and medium or above runs at max). This repo does not touch it, and the skills tell the agent not to restate the parent's model or effort.
 - **The children.** This repo's `config/models.yml` names a route per pstack role, and each `subagent` call passes it as `model: "<provider>/<model>:<effort>"`. A per-call model is the strongest layer in pi-subagents, so it wins over `subagents.agentOverrides`, agent frontmatter, `subagents.defaultModel`, and the parent's model. Nothing needs enabling.
 
 The shipped defaults, all on the `commandcode` provider from `~/.pi/agent/models.json`:

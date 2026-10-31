@@ -43,7 +43,7 @@ Effort travels as the `:level` suffix on `model`. Pi's levels are `off`, `minima
 | `z-ai/glm-5.3-flash`           | low, high, max    |
 | `xiaomi/mimo-v2.6-pro`         | low, medium, high |
 
-The parent session runs the virtual model `router/auto`, provided by the Jev router extension in `~/.pi/agent/extensions/router`. Jev judges each user turn, sets the parent's thinking level, and picks the parent's model, including peak-hour and hard-task routing. A skill should not fight it. Child effort is set by the role table instead, and the router does not decide that.
+The parent session runs the virtual model `router/auto`, provided by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to DeepSeek V4.1 Flash and never changes. Jev judges each user turn's effort, and the router lifts the judgment before applying it (low to high, medium and above to max). A skill should not fight it. Child effort is set by the role table instead, and the router does not decide that.
 
 ## Control skills
 
