@@ -1,0 +1,150 @@
+# pstack model roles for Pi.
+#
+# A role entry names a provider, a model, and an optional reasoning effort. pi-subagents takes them
+# as one `model` string on the `subagent` call, `<provider>/<model>:<effort>`, for example
+# `commandcode/deepseek/deepseek-v4.1-flash:max`. The `:effort` suffix is the child's thinking
+# level. A role with a list holds several seats, for the skills that compare independent runs.
+#
+# Resolution order, first match wins:
+#   1. ~/.pi/pstack-models.yml       per-user override, not committed
+#   2. this file                     shipped defaults
+#   3. fallback at the bottom        when a role is absent from both files
+#
+# pi-subagents selects a model and a thinking level per agent and per call. A `model` passed on the
+# call is the strongest layer: it wins over `subagents.agentOverrides.<name>`, agent frontmatter,
+# `subagents.defaultModel`, and the parent session's model. So these roles apply on every call that
+# passes them, with nothing to enable. Two settings in ~/.pi/agent/settings.json can still refuse a
+# route: an enforced `subagents.modelScope` aborts an explicit model outside its allow list, and
+# `subagents.maxThinking` fails a request above its ceiling. Each launch resolves one model, and a
+# provider error is returned rather than retried on another model.
+#
+# The provider id is the one in ~/.pi/agent/models.json (`commandcode`). Always keep it on the
+# route: the model ids contain `/`, so a bare id may not resolve to the intended provider.
+#
+# Verify a route before relying on it. `subagent({ action: "models" })` lists the ids the registry
+# resolves, `/model` shows what the parent can select, and `/subagents-models` shows the live
+# agent-to-model mapping. The pi-subagents models doc (`subagent({ action: "guide", options:
+# { topic: "models" } })`) covers the precedence in full.
+
+roles:
+  # Implementation. Raise effort for the hardest changes, lower it for mechanical edits.
+  code:
+    provider: commandcode
+    model: deepseek/deepseek-v4.1-flash
+    effort: max
+    why: Cheap and strong enough for the bulk of implementation work. Max effort because the
+      delegate owns a whole diff and the cost of a wrong shape exceeds the token saving.
+
+  # Prose, PR bodies, and any writing the operator reads.
+  prose:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+    why: Strong writing per unit cost. Judgment-call work reads well here without the price of a
+      premium reasoning model.
+
+  # Judgment calls: vague intent, contested design, final verdicts.
+  judgment:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+    why: The seat that decides when the requirement is underspecified. Swap in a stronger route
+      here first when quality matters more than cost.
+
+  # Codebase exploration for the how skill. Volume matters more than depth.
+  explorer:
+    provider: commandcode
+    model: deepseek/deepseek-v4.1-flash
+    effort: high
+
+  # The explainer that turns explorer findings into an architectural write-up.
+  explainer:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+
+  # Architectural sketches for the architect skill.
+  architect:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+    why: Design work where two structurally distinct candidates get compared.
+
+  # Arena runners. Two seats from different families, so the arena cannot collapse onto one
+  # house style. Both run at `high`, the highest effort MiMo accepts, so neither seat starts
+  # deeper than the other and the comparison stays about the design rather than the budget.
+  arena:
+    - provider: commandcode
+      model: xiaomi/mimo-v2.6-pro
+      effort: high
+    - provider: commandcode
+      model: z-ai/glm-5.3-flash
+      effort: high
+
+  # Cross-judge for the arena. A family neither runner used, so it cannot endorse its own work.
+  arena_judge:
+    provider: commandcode
+    model: deepseek/deepseek-v4.1-flash
+    effort: max
+
+  # Swarm workers: many parallel lanes, narrow scope each.
+  swarm_workers:
+    provider: commandcode
+    model: deepseek/deepseek-v4.1-flash
+    effort: high
+
+  # Adversarial reviewers, one seat per model. Diversity is the point, and price per seat barely
+  # matters here: a review reads a diff, it does not run an agent loop. Seats run at `high` where
+  # that is the model's ceiling, and at `max` where the model accepts it, so each seat gives its
+  # best without one being graded on a shallower setting than another.
+  interrogate_reviewers:
+    - provider: commandcode
+      model: xiaomi/mimo-v2.6-pro
+      effort: high
+    - provider: commandcode
+      model: z-ai/glm-5.3-flash
+      effort: max
+    - provider: commandcode
+      model: deepseek/deepseek-v4.1-flash
+      effort: max
+
+  # The lead that merges interrogate findings.
+  interrogate_lead:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+
+  # Reflect: three lenses plus a synthesizer.
+  # Same ceiling rule as the reviewers above.
+  reflect_lenses:
+    - provider: commandcode
+      model: xiaomi/mimo-v2.6-pro
+      effort: high
+    - provider: commandcode
+      model: z-ai/glm-5.3-flash
+      effort: max
+    - provider: commandcode
+      model: deepseek/deepseek-v4.1-flash
+      effort: max
+
+  reflect_synthesizer:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+
+  # Historical research for the why skill.
+  why_investigator:
+    provider: commandcode
+    model: deepseek/deepseek-v4.1-flash
+    effort: high
+
+  why_synthesizer:
+    provider: commandcode
+    model: xiaomi/mimo-v2.6-pro
+    effort: high
+
+# Used when a role is absent from both files above.
+fallback:
+  provider: commandcode
+  model: deepseek/deepseek-v4.1-flash
+  effort: high
