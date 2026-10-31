@@ -29,7 +29,7 @@ Cursor reads role models from a `pstack-models.mdc` rule. Pi reads them from `co
 
 A role entry is `provider`, `model`, and an optional `effort`. Join them into one string, `<provider>/<model>:<effort>`, and pass that as the `subagent` call's `model`. `subagent({ action: "models" })` lists the ids the registry resolves, and `/subagents-models` shows the live agent-to-model mapping.
 
-A `model` passed on a call wins over every settings default (`subagents.agentOverrides`, agent frontmatter, `subagents.defaultModel`, the parent model). An unknown or ambiguous id fails before launch with the closest matches. If `subagents.modelScope` is enforced in `~/.pi/agent/settings.json`, an explicit model outside its allow list aborts the run. In either case use the role's default and say so in the reply. Each launch resolves one model; Pi does not fall back to another model on a provider error.
+A `model` passed on a call wins over every settings default (`subagents.agentOverrides`, agent frontmatter, `subagents.defaultModel`, the parent model). An unknown or ambiguous id fails before launch with the closest matches. If `subagents.modelScope` is enforced in `~/.pi/agent/settings.json`, an explicit model outside its allow list aborts the run. In either case, implementation work moves down the ladder in `config/models.yml`; other work uses the role's default. Say so in the reply either way. Each launch resolves one model; Pi does not fall back to another model on a provider error, so moving down the ladder means issuing the call again on the next seat.
 
 Families in the upstream fallback rules map by prefix: a `claude-*` entry needs a Claude route on a registered provider, a `grok-*` entry needs an `xai/*` route, and so on.
 
@@ -39,9 +39,11 @@ Effort travels as the `:level` suffix on `model`. Pi's levels are `off`, `minima
 
 | Model                          | Efforts           |
 | ------------------------------ | ----------------- |
+| `minimax/minimax-m3.1-flash` | low, medium, high, xhigh, max |
 | `deepseek/deepseek-v4.1-flash` | low, high, max    |
 | `z-ai/glm-5.3-flash`           | low, high, max    |
 | `xiaomi/mimo-v2.6-pro`         | low, medium, high |
+| `xiaomi/mimo-v2.6-flash`       | low, medium, high |
 
 The parent session runs the virtual model `router/auto`, provided by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to Xiaomi MiMo V2.6 Pro and never changes. Jev judges each user turn's effort, and the router lifts the judgment before applying it (low to medium, medium to high, and anything above clamps to high, the model's ceiling). A skill should not fight it. Child effort is set by the role table instead, and the router does not decide that.
 

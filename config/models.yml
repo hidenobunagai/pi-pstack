@@ -25,15 +25,29 @@
 # resolves, `/model` shows what the parent can select, and `/subagents-models` shows the live
 # agent-to-model mapping. The pi-subagents models doc (`subagent({ action: "guide", options:
 # { topic: "models" } })`) covers the precedence in full.
+#
+# Seat assignment (the fleet-wide split, same as the unified orchestration design): the parent
+# session is the head and runs xiaomi/mimo-v2.6-pro, so the judgment and review roles below stay
+# on that model at high, its ceiling. Implementation delegates take the ladder documented above
+# the `code` role.
 
 roles:
-  # Implementation. Raise effort for the hardest changes, lower it for mechanical edits.
+  # Implementation ladder, in the order seats are taken. This is an availability order, not a
+  # difficulty ranking: take the first seat that is open, and when a spawn is rejected or a pool
+  # is exhausted, move down the ladder and say so in the reply.
+  #   1. minimax/minimax-m3.1-flash   max
+  #   2. z-ai/glm-5.3-flash           max
+  #   3. deepseek/deepseek-v4.1-flash max
+  #   4. xiaomi/mimo-v2.6-flash       high
+  # The `code` role is seat 1. The volume roles further down (explorer, swarm_workers,
+  # why_investigator) also sit on seat 1, at high: same ladder, with the effort tuned down for
+  # volume. Judgment calls stay off the ladder entirely, on the judgment role.
   code:
     provider: commandcode
-    model: deepseek/deepseek-v4.1-flash
+    model: minimax/minimax-m3.1-flash
     effort: max
-    why: Cheap and strong enough for the bulk of implementation work. Max effort because the
-      delegate owns a whole diff and the cost of a wrong shape exceeds the token saving.
+    why: First seat on the implementation ladder. Max effort because the delegate owns a whole
+      diff and the cost of a wrong shape exceeds the token saving.
 
   # Prose, PR bodies, and any writing the operator reads.
   prose:
@@ -54,7 +68,7 @@ roles:
   # Codebase exploration for the how skill. Volume matters more than depth.
   explorer:
     provider: commandcode
-    model: deepseek/deepseek-v4.1-flash
+    model: minimax/minimax-m3.1-flash
     effort: high
 
   # The explainer that turns explorer findings into an architectural write-up.
@@ -90,7 +104,7 @@ roles:
   # Swarm workers: many parallel lanes, narrow scope each.
   swarm_workers:
     provider: commandcode
-    model: deepseek/deepseek-v4.1-flash
+    model: minimax/minimax-m3.1-flash
     effort: high
 
   # Adversarial reviewers, one seat per model. Diversity is the point, and price per seat barely
@@ -135,7 +149,7 @@ roles:
   # Historical research for the why skill.
   why_investigator:
     provider: commandcode
-    model: deepseek/deepseek-v4.1-flash
+    model: minimax/minimax-m3.1-flash
     effort: high
 
   why_synthesizer:
