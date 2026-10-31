@@ -1,6 +1,6 @@
 # pi-pstack
 
-A port of [pstack](https://github.com/cursor/plugins/tree/main/pstack) to [Pi](https://pi.dev) (`@earendil-works/pi-coding-agent`), tuned for this host. Version `0.15.30-pi.2`: ported against upstream 0.15.30 by way of the DSH port (`dsh-pstack`), with `statechart` and the formal verification skills from upstream v0.15.36.
+A port of [pstack](https://github.com/cursor/plugins/tree/main/pstack) to [Pi](https://pi.dev) (`@earendil-works/pi-coding-agent`), tuned for this host. Version `0.15.30-pi.3`: ported against upstream 0.15.30 by way of the DSH port (`dsh-pstack`), with `statechart` and the formal verification skills from upstream v0.15.36.
 
 This is an unofficial personal fork. It is not affiliated with or endorsed by the author or Cursor. Provided as-is, with no support. Issues and pull requests may go unanswered. Fork it and make it yours.
 
