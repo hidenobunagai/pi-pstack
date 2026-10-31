@@ -45,7 +45,7 @@ Effort travels as the `:level` suffix on `model`. Pi's levels are `off`, `minima
 | `xiaomi/mimo-v2.6-pro`         | low, medium, high |
 | `xiaomi/mimo-v2.6-flash`       | low, medium, high |
 
-The parent session runs the virtual model `router/auto`, provided by the Jev router extension in `~/.pi/agent/extensions/router`. The parent's model is fixed to Xiaomi MiMo V2.6 Pro and never changes. Jev judges each user turn's effort, and the router lifts the judgment before applying it (low to medium, medium to high, and anything above clamps to high, the model's ceiling). A skill should not fight it. Child effort is set by the role table instead, and the router does not decide that.
+The parent session runs Xiaomi MiMo V2.6 Pro (`commandcode/xiaomi/mimo-v2.6-pro`) directly at thinking level high; it is the configured default model and never changes mid-session. A per-turn effort router (the Jev router extension, which exposed the virtual model `router/auto`, judged each user turn, and lifted the effort per model) was retired on 2026-11-01: the role table already fixes each seat's model and effort, so nothing routes the parent anymore. The separate jev-compaction and jev-pruner extensions remain installed. Child effort is set by the role table.
 
 ## Control skills
 
